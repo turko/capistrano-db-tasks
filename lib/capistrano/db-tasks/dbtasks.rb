@@ -1,4 +1,3 @@
-require File.expand_path("#{File.dirname(__FILE__)}/util")
 require File.expand_path("#{File.dirname(__FILE__)}/database")
 require File.expand_path("#{File.dirname(__FILE__)}/asset")
 require File.expand_path("#{File.dirname(__FILE__)}/compressors/base")
