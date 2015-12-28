@@ -22,10 +22,31 @@ Add it as a gem:
   gem "pg-capistrano", :git => 'git@bitbucket.org:polargold/infrastructure-pg-capistrano.git'
 ```
 
+Create database.yml like:
+```
+production:
+  database: "database_name"
+  username: "username"
+  password: "password"
+  host: "host"
+  adapter: "mysql"
+
+local:
+  database: "database_name"
+  username: "username"
+  password: "password"
+  host: "host"
+  adapter: "mysql"
+
+```
+
 Add to config/deploy.rb:
 
 ```ruby
     require 'capistrano/pg-capistrano'
+
+    # Set configuration file. It must exist in the share_path and in local system (default = app/config/database.yml)
+    set :db_config, 'app/config/database.yml'
 
     # if you haven't already specified
     set :stage, "production"

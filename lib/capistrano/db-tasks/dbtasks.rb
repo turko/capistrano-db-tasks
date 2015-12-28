@@ -5,6 +5,7 @@ require File.expand_path("#{File.dirname(__FILE__)}/compressors/base")
 require File.expand_path("#{File.dirname(__FILE__)}/compressors/bzip2")
 require File.expand_path("#{File.dirname(__FILE__)}/compressors/gzip")
 
+set :db_config, 'app/config/database.yml' unless fetch(:db_config)
 set :local_env, ENV['LOCAL_ENV'] || 'local' unless fetch(:local_env)
 # set :rails_env, fetch(:stage) || 'production' unless fetch(:rails_env)
 set :db_local_clean, false unless fetch(:db_local_clean)
