@@ -1,17 +1,17 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "capistrano-db-tasks/version"
+require "capistrano/pg-capistrano/version"
 
 Gem::Specification.new do |s|
-  s.name        = "capistrano-db-tasks"
-  s.version     = CapistranoDbTasks::VERSION
-  s.authors     = ["Sebastien Gruhier"]
-  s.email       = ["sebastien.gruhier@xilinus.com"]
-  s.homepage    = "https://github.com/sgruhier/capistrano-db-tasks"
+  s.name        = "pg-capistrano"
+  s.version     = PgCapistrano::VERSION
+  s.authors     = ["Marcos Fadul"]
+  s.email       = ["marcos@polargold.de"]
+  s.homepage    = "https://bitbucket.org/polargold/infrastructure-pg-capistrano"
   s.summary     = "A collection of capistrano tasks for syncing assets and databases"
   s.description = "A collection of capistrano tasks for syncing assets and databases"
 
-  s.rubyforge_project = "capistrano-db-tasks"
+  s.rubyforge_project = "pg-capistrano"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

@@ -1,8 +1,8 @@
-CapistranoDbTasks
+PGCapistrano
 =================
 
-Add database AND assets tasks to capistrano to a Rails project.
-It only works with capistrano 3. Older versions until 0.3 works with capistrano 2.
+Add database AND assets tasks to capistrano for polargold project.
+It only works with capistrano 3.
 
 Currently
 
@@ -19,13 +19,13 @@ Install
 Add it as a gem:
 
 ```ruby
-    gem "capistrano-db-tasks", require: false
+    gem "capistrano/pg-capistrano"
 ```
 
 Add to config/deploy.rb:
 
 ```ruby
-    require 'capistrano-db-tasks'
+    require 'capistrano/db-tasks'
 
     # if you haven't already specified
     set :rails_env, "production"
@@ -81,13 +81,13 @@ Available tasks
 Example
 =======
 
-    cap db:pull
-    cap production db:pull # if you are using capistrano-ext to have multistages
+    cap production db:pull
 
 
 Contributors
 ============
 
+* Sébastien Gruhier (https://github.com/sgruhier)
 * tilsammans (http://github.com/tilsammansee)
 * bigfive    (http://github.com/bigfive)
 * jakemauer  (http://github.com/jakemauer)
@@ -96,7 +96,8 @@ Contributors
 TODO
 ====
 
-* May be change project's name as it's not only database tasks now :)
+* Add task for Typo3
 * Add tests
 
-Copyright (c) 2009 [Sébastien Gruhier - XILINUS], released under the MIT license
+Copyright (c) 2015 [Marcos Fadul - polargold], released under the MIT license
+Copyright (c) 2015-2009 [Sébastien Gruhier - XILINUS], released under the MIT license

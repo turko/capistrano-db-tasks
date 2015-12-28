@@ -1,0 +1,14 @@
+# IntelliJ project files
+.idea
+*.iml
+
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio
+*.iml
+
+# Bundler files
+/.ruby-version
+/.ruby-gemset
+/.bundle
+/pkg
+/Gemfile.lock
+/rdoc
