@@ -19,7 +19,7 @@ Install
 Add it as a gem:
 
 ```ruby
-    gem "capistrano/pg-capistrano", :bitbucket => 'polargold/infrastructure-pg-capistrano'
+  gem "pg-capistrano", :git => 'git@bitbucket.org:polargold/infrastructure-pg-capistrano.git'
 ```
 
 Add to config/deploy.rb:
