@@ -19,13 +19,13 @@ Install
 Add it as a gem:
 
 ```ruby
-    gem "capistrano/pg-capistrano"
+    gem "capistrano/pg-capistrano", :bitbucket => 'polargold/infrastructure-pg-capistrano'
 ```
 
 Add to config/deploy.rb:
 
 ```ruby
-    require 'capistrano/db-tasks'
+    require 'capistrano/pg-capistrano'
 
     # if you haven't already specified
     set :rails_env, "production"

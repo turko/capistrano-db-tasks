@@ -54,7 +54,7 @@ module Database
       end
     end
 
-  private
+    private
 
     def pgpass
       @config['password'] ? "PGPASSWORD='#{@config['password']}'" : ""
@@ -88,16 +88,16 @@ module Database
     def dump_cmd_ignore_tables_opts
       ignore_tables = @cap.fetch(:db_ignore_tables, [])
       if mysql?
-        ignore_tables.map{ |t| "--ignore-table=#{database}.#{t}" }.join(" ")
+        ignore_tables.map { |t| "--ignore-table=#{database}.#{t}" }.join(" ")
       elsif postgresql?
-        ignore_tables.map{ |t| "--exclude-table=#{t}" }.join(" ")
+        ignore_tables.map { |t| "--exclude-table=#{t}" }.join(" ")
       end
     end
 
     def dump_cmd_ignore_data_tables_opts
       ignore_tables = @cap.fetch(:db_ignore_data_tables, [])
       if postgresql?
-        ignore_tables.map{ |t| "--exclude-table-data=#{t}" }.join(" ")
+        ignore_tables.map { |t| "--exclude-table-data=#{t}" }.join(" ")
       end
     end
 
@@ -106,12 +106,13 @@ module Database
   class Remote < Base
     def initialize(cap_instance)
       super(cap_instance)
-      @config = @cap.capture("cat #{@cap.current_path}/config/database.yml")
+      @config = @cap.capture("cat #{@cap.shared_path.join(fetch(:db_config))}")
       @config = YAML.load(ERB.new(@config).result)[@cap.fetch(:rails_env).to_s]
+      #puts "#{fetch(:rails_env).to_s} #{@config}"
     end
 
     def dump
-      @cap.execute "cd #{@cap.current_path} && #{dump_cmd} | #{compressor.compress('-', output_file)}"
+      @cap.execute "cd #{@cap.shared_path} && #{dump_cmd} | #{compressor.compress('-', output_file)}"
       self
     end
 
@@ -130,23 +131,23 @@ module Database
     # cleanup = true removes the mysqldump file after loading, false leaves it in db/
     def load(file, cleanup)
       unzip_file = File.join(File.dirname(file), File.basename(file, ".#{compressor.file_extension}"))
-      # @cap.run "cd #{@cap.current_path} && bunzip2 -f #{file} && RAILS_ENV=#{@cap.rails_env} bundle exec rake db:drop db:create && #{import_cmd(unzip_file)}"
-      @cap.execute "cd #{@cap.current_path} && #{compressor.decompress(file)} && RAILS_ENV=#{@cap.fetch(:rails_env)} && #{import_cmd(unzip_file)}"
-      @cap.execute("cd #{@cap.current_path} && rm #{unzip_file}") if cleanup
+      # @cap.run "cd #{@cap.shared_path} && bunzip2 -f #{file} && RAILS_ENV=#{@cap.rails_env} bundle exec rake db:drop db:create && #{import_cmd(unzip_file)}"
+      @cap.execute "cd #{@cap.shared_path} && #{compressor.decompress(file)} && RAILS_ENV=#{@cap.fetch(:rails_env)} && #{import_cmd(unzip_file)}"
+      @cap.execute("cd #{@cap.shared_path} && rm #{unzip_file}") if cleanup
     end
 
     private
 
     def dump_file_path
-      "#{@cap.current_path}/#{output_file}"
+      "#{@cap.shared_path}/#{output_file}"
     end
   end
 
   class Local < Base
     def initialize(cap_instance)
       super(cap_instance)
-      @config = YAML.load(ERB.new(File.read(File.join('config', 'database.yml'))).result)[fetch(:local_rails_env).to_s]
-      puts "local #{@config}"
+      @config = YAML.load(ERB.new(File.read(fetch(:db_config).to_s)).result)[fetch(:local_rails_env).to_s]
+      #puts "#{fetch(:local_rails_env).to_s} #{@config}"
     end
 
     # cleanup = true removes the mysqldump file after loading, false leaves it in db/
@@ -154,7 +155,7 @@ module Database
       unzip_file = File.join(File.dirname(file), File.basename(file, ".#{compressor.file_extension}"))
       # system("bunzip2 -f #{file} && bundle exec rake db:drop db:create && #{import_cmd(unzip_file)} && bundle exec rake db:migrate")
       @cap.info "executing local: #{compressor.decompress(file)}" && #{import_cmd(unzip_file)}"
-      system("#{compressor.decompress(file)} && #{import_cmd(unzip_file)}")
+                    system("#{compressor.decompress(file)} && #{import_cmd(unzip_file)}")
       if cleanup
         @cap.info "removing #{unzip_file}"
         File.unlink(unzip_file)
@@ -170,7 +171,8 @@ module Database
     end
 
     def upload
-      remote_file = "#{@cap.current_path}/#{output_file}"
+      remote_file = "#{@cap.shared_path}/#{output_file}"
+      #puts "#{output_file}"
       @cap.upload! output_file, remote_file
     end
   end
@@ -184,7 +186,7 @@ module Database
     end
 
     def remote_to_local(instance)
-      local_db  = Database::Local.new(instance)
+      local_db = Database::Local.new(instance)
       remote_db = Database::Remote.new(instance)
 
       check(local_db, remote_db)
@@ -198,7 +200,7 @@ module Database
     end
 
     def local_to_remote(instance)
-      local_db  = Database::Local.new(instance)
+      local_db = Database::Local.new(instance)
       remote_db = Database::Remote.new(instance)
 
       check(local_db, remote_db)
