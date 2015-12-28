@@ -28,7 +28,13 @@ Add to config/deploy.rb:
     require 'capistrano/pg-capistrano'
 
     # if you haven't already specified
-    set :rails_env, "production"
+    set :stage, "production"
+
+    # If you want to import assets, you can change default asset dir (default = _static)
+    set :local_assets_dir, "_static"
+
+    # Files and Folder to sync. This directory must be in your shared directory on the server
+    set :assets_dir, %w(web/fileadmin web/uploads)
 
     # if you want to remove the local dump file after loading
     set :db_local_clean, true
@@ -42,13 +48,8 @@ Add to config/deploy.rb:
     # if you want to exclude table data (but not table schema) from dump
     set :db_ignore_data_tables, []
 
-    # If you want to import assets, you can change default asset dir (default = system)
-    # This directory must be in your shared directory on the server
-    set :assets_dir, %w(public/assets public/att)
-    set :local_assets_dir, %w(public/assets public/att)
-
-    # if you want to work on a specific local environment (default = ENV['RAILS_ENV'] || 'development')
-    set :locals_rails_env, "production"
+    # if you want to work on a specific local environment (default = ENV['LOCAL_ENV'] || 'local')
+    set :local_env, "local"
 
     # if you are highly paranoid and want to prevent any push operation to the server
     set :disallow_pushing, true
@@ -69,14 +70,14 @@ Add to .gitignore
 Available tasks
 ===============
 
-    app:local:sync      || app:pull     # Synchronize your local assets AND database using remote assets and database
-    app:remote:sync     || app:push     # Synchronize your remote assets AND database using local assets and database
+    app:local:sync      || app:pull     # Update local system assets AND database using remote instance assets and database
+    app:remote:sync     || app:push     # Update remote instance assets AND database using local system assets and database
 
-    assets:local:sync   || assets:pull  # Synchronize your local assets using remote assets
-    assets:remote:sync  || assets:push  # Synchronize your remote assets using local assets
+    assets:local:sync   || assets:pull  # Update local system assets using remote instance assets
+    assets:remote:sync  || assets:push  # Update remote instance assets using local system assets
 
-    db:local:sync       || db:pull      # Synchronize your local database using remote database data
-    db:remote:sync      || db:push      # Synchronize your remote database using local database data
+    db:local:sync       || db:pull      # Update local system database using remote instance database data
+    db:remote:sync      || db:push      # Update remote instance database using local system database data
 
 Example
 =======
