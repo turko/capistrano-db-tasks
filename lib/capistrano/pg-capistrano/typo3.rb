@@ -46,7 +46,7 @@ namespace :typo3 do
       end
     end
     desc "clearallexceptpagecache"
-    task :AllButPages do
+    task :allButPages do
       on roles(:web) do
         typo3_cli = File.join(release_path, 'web/typo3/cli_dispatch.phpsh')
         within release_path do
