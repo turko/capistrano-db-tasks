@@ -118,6 +118,7 @@ Contributors
 TODO
 ====
 
+* Send assets path in database.yml to be able to use it direct on the server environment
 * Add task for Typo3
 * Add tests
 
