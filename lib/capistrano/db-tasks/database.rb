@@ -108,7 +108,7 @@ module Database
       super(cap_instance)
       @config = @cap.capture("cat #{@cap.shared_path.join(fetch(:db_config))}")
       @config = YAML.load(ERB.new(@config).result)[@cap.fetch(:stage).to_s]
-      @cap.debug("#{fetch(:stage).to_s} #{@config}")
+      puts "#{fetch(:stage).to_s} #{@config}"
     end
 
     def dump
@@ -148,7 +148,7 @@ module Database
     def initialize(cap_instance)
       super(cap_instance)
       @config = YAML.load(ERB.new(File.read(fetch(:db_config).to_s)).result)[fetch(:local_env).to_s]
-      @cap.debug("#{fetch(:local_env).to_s} #{@config}")
+      puts "#{fetch(:local_env).to_s} #{@config}"
     end
 
     # cleanup = true removes the mysqldump file after loading, false leaves it in db/
