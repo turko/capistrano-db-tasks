@@ -24,14 +24,7 @@ Add it as a gem:
 
 Create database.yml like:
 ```
-production:
-  database: "database_name"
-  username: "username"
-  password: "password"
-  host: "host"
-  adapter: "mysql"
-
-local:
+capistrano:
   database: "database_name"
   username: "username"
   password: "password"
