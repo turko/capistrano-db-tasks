@@ -6,9 +6,9 @@ require 'capistrano/setup'
 # Include default deployment tasks
 require 'capistrano/deploy'
 
-require 'capistrano/composer'
-
 require File.expand_path("#{File.dirname(__FILE__)}/capistrano/dsl/task_enhancements")
+
+require 'capistrano/composer'
 
 require 'capistrano/pg-capistrano/util'
 
