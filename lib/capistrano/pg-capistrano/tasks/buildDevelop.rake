@@ -13,10 +13,10 @@ task :buildDevelop do
   vm_dir = Pathname.new('_vm')
 
   # Create important directories
-  if File.directory?(static_dir)
+  unless File.directory?(static_dir)
     mkdir_p static_dir
   end
-  if File.directory?(db_dir)
+  unless File.directory?(db_dir)
     mkdir_p db_dir
   end
 
