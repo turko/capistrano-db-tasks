@@ -5,10 +5,6 @@ desc 'Config environment'
 task :local do
   load deploy_config_path
 
-  # call bundle install
-  system("bundle install --quiet")
-  puts "bundler was update"
-
   # call composer install
   composer_json_path = (Pathname.new ".") + fetch(:composer_json_local_path)
   system("cd #{composer_json_path.dirname} && composer install #{fetch(:composer_local_install_flags)}")
