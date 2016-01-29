@@ -102,16 +102,22 @@ Available tasks
     db:local:sync       || db:pull      # Update local system database using remote instance database data
     db:remote:sync      || db:push      # Update remote instance database using local system database data
 
-    deploy:setup # Set up staging.
+    deploy:setup                        # Set up staging.
 
-    cap local # Update composer, bundler
+    cap local                           # Update composer, bundler
 
-    cap buildDevelop # Build develop environment
+    cap buildDevelop                    # Build develop environment
 
 Example
 =======
 
     cap production db:pull
+
+    cap local
+
+    cap product deploy:setup
+
+    cap buildDevelop
 
 
 Contributors
