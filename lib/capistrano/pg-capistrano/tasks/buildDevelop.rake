@@ -59,9 +59,9 @@ task :buildDevelop do
 
   # Create VM
   if !File.directory?(vm_dir) && Util.prompt("Do you want to create a vm?")
-    system("git clone git@bitbucket.org:polargold/infrastructure-pg-capistrano.git #{vm_dir}")
+    system("git clone git@bitbucket.org:polargold/infrastructure-vagrant.git #{vm_dir}")
     system("cd #{vm_dir} && bundler exec librarian-puppet install")
-    system("vagrant up")
+    system("cd #{vm_dir} && vagrant up")
   end
 
   puts "Everything is ready now. Please log into your VM and do the following steps:"
