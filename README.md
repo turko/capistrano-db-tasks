@@ -24,14 +24,7 @@ Add it as a gem:
 
 Create database.yml like:
 ```
-production:
-  database: "database_name"
-  username: "username"
-  password: "password"
-  host: "host"
-  adapter: "mysql"
-
-local:
+capistrano:
   database: "database_name"
   username: "username"
   password: "password"
@@ -46,7 +39,7 @@ Add to config/deploy.rb:
     require 'capistrano/pg-capistrano'
 
     # Set configuration file. It must exist in the share_path and in local system (default = app/config/database.yml)
-    set :db_config, 'app/config/database.yml'
+    set :db_config, 'app/config/capistrano.yml'
 
     # if you haven't already specified
     set :stage, "production"
@@ -56,6 +49,10 @@ Add to config/deploy.rb:
 
     # Files and Folder to sync. This directory must be in your shared directory on the server
     set :assets_dir, %w(web/fileadmin web/uploads)
+
+    # Files to exclude from rsync. This files are going to be later links to app/resources.
+    # Example ['web/fileadmin/assets']
+    set :assets_excludes, [] unless fetch(:assets_excludes)
 
     # if you want to remove the local dump file after loading
     set :db_local_clean, true
@@ -77,6 +74,11 @@ Add to config/deploy.rb:
 
     # if you prefer bzip2/unbzip2 instead of gzip
     set :compressor, :bzip2
+
+    # For build/local command:
+    set :composer_local_install_flags, '--prefer-dist --no-interaction --quiet'
+    set :composer_json_local_path, 'web/composer.json'
+
 
 ```
 
@@ -100,10 +102,22 @@ Available tasks
     db:local:sync       || db:pull      # Update local system database using remote instance database data
     db:remote:sync      || db:push      # Update remote instance database using local system database data
 
+    deploy:setup                        # Set up staging.
+
+    cap local                           # Update composer, bundler
+
+    cap buildDevelop                    # Build develop environment
+
 Example
 =======
 
     cap production db:pull
+
+    cap local
+
+    cap product deploy:setup
+
+    cap buildDevelop
 
 
 Contributors
@@ -119,7 +133,6 @@ TODO
 ====
 
 * Send assets path in database.yml to be able to use it direct on the server environment
-* Add task for Typo3
 * Add tests
 
 Copyright (c) 2015 [Marcos Fadul - polargold], released under the MIT license
