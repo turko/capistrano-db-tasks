@@ -53,8 +53,8 @@ task :buildDevelop do
   # Link app resources
   absolute_path = Pathname.new("/var/www")
   fetch(:assets_excludes).each do |directory|
-    system("ln -sfn #{(absolute_path + app_dir + "resources" + directory).cleanpath} #{directory}")
-    puts I18n.t(:written_file, scope: :capistrano, file: " link from #{(absolute_path + app_dir + "resources" + directory).cleanpath} to #{directory}")
+    system("ln -sfn #{(absolute_path + app_dir + "resources" + directory).realpath} #{directory}")
+    puts I18n.t(:written_file, scope: :capistrano, file: " link from #{(absolute_path + app_dir + "resources" + directory).realpath} to #{directory}")
   end
 
   # Create VM
