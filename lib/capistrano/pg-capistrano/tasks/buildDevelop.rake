@@ -46,15 +46,17 @@ task :buildDevelop do
   end
 
   # Link static resources
-  fetch(:assets_dir).each do |directory|
+  fetch(:assets_dir).flatten.each do |directory|
     system("ln -sfn ../#{(static_dir + directory).cleanpath} #{directory[0...-1]}")
     puts I18n.t(:written_file, scope: :capistrano, file: " link from #{(static_dir + directory).cleanpath} to #{directory[0...-1]}")
   end
   # Link app resources
   absolute_path = Pathname.new("/var/www")
-  fetch(:assets_excludes).each do |directory|
-    system("ln -sfn #{(absolute_path + app_dir + "resources" + directory).realpath} #{directory}")
-    puts I18n.t(:written_file, scope: :capistrano, file: " link from #{(absolute_path + app_dir + "resources" + directory).realpath} to #{directory}")
+  fetch(:assets_excludes).flatten.each do |directory|
+    if File.exists?(app_dir.join('resources', directory))
+      system("ln -sfn #{(absolute_path + app_dir + "resources" + directory).realpath} #{directory}")
+      puts I18n.t(:written_file, scope: :capistrano, file: " link from #{(absolute_path + app_dir + "resources" + directory).realpath} to #{directory}")
+    end
   end
 
   # Create VM
