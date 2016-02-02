@@ -30,6 +30,7 @@ capistrano:
   password: "password"
   host: "host"
   adapter: "mysql"
+  assets_dir: _static
 
 ```
 
@@ -43,9 +44,6 @@ Add to config/deploy.rb:
 
     # if you haven't already specified
     set :stage, "production"
-
-    # If you want to import assets, you can change default asset dir (default = _static)
-    set :local_assets_dir, "_static"
 
     # Files and Folder to sync. This directory must be in your shared directory on the server
     set :assets_dir, %w(web/fileadmin web/uploads)
