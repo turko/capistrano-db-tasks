@@ -6,9 +6,6 @@ module Asset
     def initialize(cap_instance)
       @cap = cap_instance
     end
-    def assets_dir
-      @config['assets_dir']
-    end
   end
   class Local < Base
     def initialize(cap_instance)
@@ -16,10 +13,13 @@ module Asset
       @config = YAML.load(ERB.new(File.read(fetch(:db_config).to_s)).result)[fetch(:local_env).to_s]
       puts "Local Environment: #{@config}"
     end
+    def assets_dir
+      @config['assets_dir'] || '.'
+    end
   end
 
   def remote_to_local(cap)
-    local_assets = Database::Local.new(instance)
+    local_assets = Asset::Local.new(instance)
 
     servers = Capistrano::Configuration.env.send(:servers)
     server = servers.detect { |s| s.roles.include?(:app) }
@@ -27,7 +27,7 @@ module Asset
     user = server.netssh_options[:user]
 
     [cap.fetch(:assets_dir)].flatten.each do |dir|
-      system("mkdir -p #{cap.fetch(:local_assets_dir)}/#{dir}")
+      system("mkdir -p #{local_assets.assets_dir}/#{dir}")
       system("rsync -a --del --no-links -vv --progress #{self::exclude_arg(cap)} --rsh='ssh -p #{port}' #{user}@#{server}:#{cap.current_path}/#{dir} #{local_assets.assets_dir}/#{dir}")
     end
   end

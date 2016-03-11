@@ -108,15 +108,17 @@ module Database
       super(cap_instance)
       @config = @cap.capture("cat #{@cap.shared_path.join(fetch(:db_config))}")
       @config = YAML.load(ERB.new(@config).result)[@cap.fetch(:local_env).to_s]
-      puts "#{fetch(:stage).to_s} #{@config}"
     end
 
     def dump
+      @cap.execute "mkdir -p #{File.dirname(dump_file_path)}"
       @cap.execute "cd #{@cap.shared_path} && #{dump_cmd} | #{compressor.compress('-', output_file)}"
       self
     end
 
-    def download(local_file = "#{output_file}")
+    def download(local_file)
+      system "mkdir -p #{File.dirname(local_file)}"
+      @cap.info "downloading #{dump_file_path}"
       @cap.download! dump_file_path, local_file
     end
 
@@ -131,8 +133,6 @@ module Database
     # cleanup = true removes the mysqldump file after loading, false leaves it in db/
     def load(file, cleanup)
       unzip_file = File.join(File.dirname(file), File.basename(file, ".#{compressor.file_extension}"))
-      # @cap.run "cd #{@cap.shared_path} && bunzip2 -f #{file} && RAILS_ENV=#{@cap.rails_env} bundle exec rake db:drop db:create && #{import_cmd(unzip_file)}"
-      # @cap.execute "cd #{@cap.shared_path} && #{compressor.decompress(file)} && RAILS_ENV=#{@cap.fetch(:rails_env)} && #{import_cmd(unzip_file)}"
       @cap.execute "cd #{@cap.shared_path} && #{compressor.decompress(file)} && #{import_cmd(unzip_file)}"
       @cap.execute("cd #{@cap.shared_path} && rm #{unzip_file}") if cleanup
     end
@@ -140,7 +140,7 @@ module Database
     private
 
     def dump_file_path
-      "#{@cap.shared_path}/#{output_file}"
+      "#{@cap.shared_path.join(output_file)}"
     end
   end
 
@@ -154,9 +154,7 @@ module Database
     # cleanup = true removes the mysqldump file after loading, false leaves it in db/
     def load(file, cleanup)
       unzip_file = File.join(File.dirname(file), File.basename(file, ".#{compressor.file_extension}"))
-      # system("bunzip2 -f #{file} && bundle exec rake db:drop db:create && #{import_cmd(unzip_file)} && bundle exec rake db:migrate")
-      @cap.info "executing local: #{compressor.decompress(file)}" && #{import_cmd(unzip_file)}"
-                    system("#{compressor.decompress(file)} && #{import_cmd(unzip_file)}")
+      @cap.info "executing local: #{compressor.decompress(file)}" && system("#{compressor.decompress(file)} && #{import_cmd(unzip_file)}")
       if cleanup
         @cap.info "removing #{unzip_file}"
         File.unlink(unzip_file)
@@ -167,14 +165,23 @@ module Database
     end
 
     def dump
-      system "#{dump_cmd} | #{compressor.compress('-', output_file)}"
+      system "mkdir -p #{File.dirname(assets_dir.join(output_file))}"
+      system "#{dump_cmd} | #{compressor.compress('-', assets_dir.join(output_file))}"
       self
     end
 
     def upload
-      remote_file = "#{@cap.shared_path}/#{output_file}"
-      #puts "#{output_file}"
-      @cap.upload! output_file, remote_file
+      remote_file = "#{@cap.shared_path.join(output_file)}"
+      @cap.execute "mkdir -p #{File.dirname(remote_file)}"
+      @cap.info "uploading #{output_file}"
+      @cap.upload! output_full_file, remote_file
+    end
+
+    def output_full_file
+      assets_dir.join(output_file)
+    end
+    def assets_dir
+      @config['assets_dir']
     end
   end
 
@@ -193,11 +200,11 @@ module Database
       check(local_db, remote_db)
 
       begin
-        remote_db.dump.download
+        remote_db.dump.download(local_db.assets_dir.join(remote_db.output_file))
       ensure
         remote_db.clean_dump_if_needed
       end
-      local_db.load(remote_db.output_file, instance.fetch(:db_local_clean))
+      local_db.load(local_db.assets_dir.join(remote_db.output_file), instance.fetch(:db_local_clean))
     end
 
     def local_to_remote(instance)
@@ -208,7 +215,7 @@ module Database
 
       local_db.dump.upload
       remote_db.load(local_db.output_file, instance.fetch(:db_local_clean))
-      File.unlink(local_db.output_file) if instance.fetch(:db_local_clean)
+      File.unlink(local_db.output_full_file) if instance.fetch(:db_local_clean)
     end
   end
 

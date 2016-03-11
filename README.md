@@ -22,7 +22,7 @@ Add it as a gem:
   gem "pg-capistrano", :git => 'git@bitbucket.org:polargold/infrastructure-pg-capistrano.git'
 ```
 
-Create database.yml like:
+Create capistrano.yml like:
 ```
 capistrano:
   database: "database_name"
@@ -50,7 +50,7 @@ Add to config/deploy.rb:
 
     # Files to exclude from rsync. This files are going to be later links to app/resources.
     # Example ['web/fileadmin/assets']
-    set :assets_excludes, [] unless fetch(:assets_excludes)
+    set :assets_excludes, []
 
     # if you want to remove the local dump file after loading
     set :db_local_clean, true
@@ -65,7 +65,7 @@ Add to config/deploy.rb:
     set :db_ignore_data_tables, []
 
     # if you want to work on a specific local environment (default = ENV['LOCAL_ENV'] || 'local')
-    set :local_env, "local"
+    set :local_env, "capistrano"
 
     # if you are highly paranoid and want to prevent any push operation to the server
     set :disallow_pushing, true
@@ -75,7 +75,7 @@ Add to config/deploy.rb:
 
     # For build/local command:
     set :composer_local_install_flags, '--prefer-dist --no-interaction --quiet'
-    set :composer_json_local_path, 'web/composer.json'
+    set :composer_json_local_path, 'web/'
 
 
 ```
